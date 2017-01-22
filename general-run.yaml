@@ -1,0 +1,78 @@
+---
+- hosts: all
+  become: true
+  vars:
+          # About python
+          python3_requirements: py3requirements.txt
+          pip3_path: /usr/bin/pip3
+          python2_requirements: py2requirements.txt
+          pip2_path: /usr/bin/pip2
+          
+          # Download paths
+          general_path: ~/setups
+          slack_download_path: slack.deb
+
+  tasks:
+          - name: Create a folder for download paths
+            command: mkdir {{ general_path }}
+
+          - name: Make sure VIM is installed
+            apt:
+                    name: vim
+                    state: latest
+
+          - name: Install git
+            apt:
+                    name: git
+                    state: latest
+
+          - name: Make sure python3 is installed
+            apt:
+                    name: python3
+                    state: latest
+
+          - name: Make sure pip3 is installed
+            apt:
+                    name: python3-pip
+                    state: latest
+
+          - name: Make sure python2 is installed
+            apt:
+                    name: python
+                    state: latest
+
+          - name: Make sure pip2 is installed
+            apt:
+                    name: python
+                    state: latest
+
+          - name: Install all the python3 packages
+            pip:
+                    requirements: {{ python3_requirements }}
+                    executable: {{ pip3_path }}
+
+          - name: Install all the python2 packages
+            pip:
+                    requirements: {{ python2_requirements }}
+                    executable: {{ pip2_path }}
+          
+          # - name: Generate a ssh key // learn how to use the 
+          # "expect" command
+
+          - name: Install neo4j
+            apt:
+                    name: neo4j-client
+                    state: latest
+
+          - name: Download slack
+            get_url:
+                    url: {{ slack_url }}
+                    dest: {{ general_path }}/{{ slack_download_path }}
+          
+          - name: Install slack
+            command: dpkg -i {{ general_path }}/{{ slack_download_path }}
+
+          - name: Remove instalation files
+            command: rm {{ general_path }} -r
+
+
